@@ -2,9 +2,19 @@ import 'package:flutter/material.dart';
 import 'package:teste_flutter/features/tables/widgets/customers_counter.widget.dart';
 import 'package:teste_flutter/shared/widgets/search_input.widget.dart';
 import 'package:teste_flutter/utils/extension_methos/material_extensions_methods.dart';
+import 'package:teste_flutter/features/tables/widgets/edit_table_modal.widget.dart';
 
 class TablesHeader extends StatelessWidget {
   const TablesHeader({super.key});
+
+  void _openCreateTableModal(BuildContext context) {
+    showModalBottomSheet(
+      context: context,
+      isScrollControlled: true,
+      backgroundColor: Colors.transparent,
+      builder: (_) => const EditTableModal(),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -26,9 +36,7 @@ class TablesHeader extends StatelessWidget {
             const CustomersCounter(label: '{sum_customers}'),
             const SizedBox(width: 20),
             FloatingActionButton(
-              onPressed: () {
-                debugPrint('criar nova mesa');
-              },
+              onPressed: () => _openCreateTableModal(context),
               tooltip: 'Criar nova mesa',
               child: const Icon(Icons.add),
             ),
