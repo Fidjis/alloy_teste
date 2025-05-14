@@ -21,4 +21,11 @@ abstract class _TablesStoreBase with Store {
   void removeTable(TableStore table) {
     tables.remove(table);
   }
+
+  @action
+  void updateTable(int index, TableStore updatedTable) {
+    if (index >= 0 && index < tables.length) {
+      tables[index] = updatedTable;
+    }
+  }
 }
