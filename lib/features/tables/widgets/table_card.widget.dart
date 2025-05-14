@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:teste_flutter/features/tables/stores/table.store.dart';
 import 'package:teste_flutter/features/tables/widgets/customers_counter.widget.dart';
+import 'package:teste_flutter/features/tables/widgets/edit_table_modal.widget.dart';
 import 'package:teste_flutter/utils/extension_methos/material_extensions_methods.dart';
 
 const double _innerPadding = 1.0;
@@ -36,7 +37,14 @@ class TableCard extends StatelessWidget {
             ),
             child: InkWell(
               onTap: () {
-                debugPrint('editar mesa');
+                showModalBottomSheet(
+                  context: context,
+                  isScrollControlled: true,
+                  backgroundColor: Colors.transparent,
+                  builder: (_) => EditTableModal(
+                    tableStore: tableStore,
+                  ),
+                );
               },
               child: Padding(
                 padding: const EdgeInsets.all(10),

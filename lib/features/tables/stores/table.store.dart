@@ -7,12 +7,15 @@ class TableStore = _TableStoreBase with _$TableStore;
 
 abstract class _TableStoreBase with Store {
   @observable
+  int id;
+
+  @observable
   String identification;
 
   @observable
   ObservableList<CustomerEntity> customers = ObservableList<CustomerEntity>();
 
-  _TableStoreBase({required this.identification, List<CustomerEntity>? customers}) {
+  _TableStoreBase({required this.id, required this.identification, List<CustomerEntity>? customers}) {
     if (customers != null) {
       this.customers.addAll(customers);
     }

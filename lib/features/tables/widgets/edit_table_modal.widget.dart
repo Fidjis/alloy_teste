@@ -5,11 +5,12 @@ import 'package:teste_flutter/features/tables/stores/tables.store.dart';
 import 'package:teste_flutter/shared/widgets/modal.widget.dart';
 import 'package:teste_flutter/shared/widgets/primary_button.widget.dart';
 import 'package:teste_flutter/shared/widgets/secondary_button.widget.dart';
+import 'package:teste_flutter/features/customers/entities/customer.entity.dart';
+import 'package:teste_flutter/features/customers/widgets/edit_customer_modal.widget.dart';
 
 class EditTableModal extends StatefulWidget {
   final TableStore? tableStore;
-  final int? tableIndex;
-  const EditTableModal({super.key, this.tableStore, this.tableIndex});
+  const EditTableModal({super.key, this.tableStore});
 
   @override
   State<EditTableModal> createState() => _EditTableModalState();
@@ -20,6 +21,7 @@ class _EditTableModalState extends State<EditTableModal> {
   late int customersCount;
   final TablesStore tablesStore = GetIt.I<TablesStore>();
   final GlobalKey<FormState> formKey = GlobalKey<FormState>();
+  String searchTerm = '';
 
   @override
   void initState() {
@@ -32,14 +34,29 @@ class _EditTableModalState extends State<EditTableModal> {
     if (!(formKey.currentState?.validate() ?? false)) {
       return;
     }
+    final customers = <CustomerEntity>[];
+    for (int i = 0; i < customersCount; i++) {
+      if (widget.tableStore != null && i < widget.tableStore!.customers.length) {
+        customers.add(widget.tableStore!.customers[i]);
+      } else {
+        customers.add(CustomerEntity(
+          id: DateTime.now().millisecondsSinceEpoch + i,
+          name: 'Cliente ${i + 1}',
+          phone: 'Não informado',
+        ));
+      }
+    }
     final newTable = TableStore(
+      id: widget.tableStore?.id ?? DateTime.now().millisecondsSinceEpoch,
       identification: identificationController.text,
-      customers: List.of(widget.tableStore?.customers ?? []),
+      customers: customers,
     );
-    if (widget.tableStore == null || widget.tableIndex == null) {
+    if (widget.tableStore == null) {
       tablesStore.addTable(newTable);
     } else {
-      tablesStore.updateTable(widget.tableIndex!, newTable);
+      if (widget.tableStore != null) {
+        tablesStore.updateTable(newTable);
+      }
     }
     Navigator.of(context).pop();
   }
@@ -84,6 +101,56 @@ class _EditTableModalState extends State<EditTableModal> {
                 },
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          const Row(
+            children: [
+              Text('Clientes da mesa:'),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Column(
+            children: List.generate(customersCount, (index) {
+              final customer =
+                  widget.tableStore?.customers.length != null && index < widget.tableStore!.customers.length
+                      ? widget.tableStore!.customers[index]
+                      : null;
+              return ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(customer?.name ?? 'Cliente ${index + 1}'),
+                subtitle: Text(customer?.phone ?? 'Não informado'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => EditCustomerModal(
+                        customer: customer,
+                      ),
+                    ).then((result) {
+                      if (result is CustomerEntity) {
+                        setState(() {
+                          if (widget.tableStore != null) {
+                            if (index < widget.tableStore!.customers.length) {
+                              final old = widget.tableStore!.customers[index];
+                              widget.tableStore!.customers[index] = CustomerEntity(
+                                id: old.id,
+                                name: result.name,
+                                phone: result.phone,
+                              );
+                            } else if (index == widget.tableStore!.customers.length) {
+                              widget.tableStore!.customers.add(result);
+                            }
+                          }
+                        });
+                      }
+                    });
+                  },
+                ),
+              );
+            }),
           ),
         ],
         actions: [

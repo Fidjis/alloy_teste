@@ -21,7 +21,7 @@ class TablesList extends StatelessWidget {
             Wrap(
               spacing: 10,
               runSpacing: 10,
-              children: tablesStore.tables
+              children: tablesStore.filteredTables
                   .map(
                     (tableStore) => GestureDetector(
                       onTap: () {
