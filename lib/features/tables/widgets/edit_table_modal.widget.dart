@@ -5,6 +5,8 @@ import 'package:teste_flutter/features/tables/stores/tables.store.dart';
 import 'package:teste_flutter/shared/widgets/modal.widget.dart';
 import 'package:teste_flutter/shared/widgets/primary_button.widget.dart';
 import 'package:teste_flutter/shared/widgets/secondary_button.widget.dart';
+import 'package:teste_flutter/features/customers/entities/customer.entity.dart';
+import 'package:teste_flutter/features/customers/widgets/edit_customer_modal.widget.dart';
 
 class EditTableModal extends StatefulWidget {
   final TableStore? tableStore;
@@ -84,6 +86,50 @@ class _EditTableModalState extends State<EditTableModal> {
                 },
               ),
             ],
+          ),
+          const SizedBox(height: 16),
+          Row(
+            children: [
+              const Text('Clientes da mesa:'),
+            ],
+          ),
+          const SizedBox(height: 8),
+          Column(
+            children: List.generate(customersCount, (index) {
+              final customer = widget.tableStore?.customers.length != null && index < widget.tableStore!.customers.length
+                  ? widget.tableStore!.customers[index]
+                  : null;
+              return ListTile(
+                leading: const Icon(Icons.person),
+                title: Text(customer?.name ?? 'Cliente ${index + 1}'),
+                subtitle: Text(customer?.phone ?? 'Não informado'),
+                trailing: IconButton(
+                  icon: const Icon(Icons.edit),
+                  onPressed: () async {
+                    showModalBottomSheet(
+                      context: context,
+                      isScrollControlled: true,
+                      backgroundColor: Colors.transparent,
+                      builder: (_) => EditCustomerModal(
+                        customer: customer,
+                      ),
+                    ).then((result) {
+                      if (result is CustomerEntity) {
+                        setState(() {
+                          if (widget.tableStore != null) {
+                            if (index < widget.tableStore!.customers.length) {
+                              widget.tableStore!.customers[index] = result;
+                            } else {
+                              widget.tableStore!.customers.add(result);
+                            }
+                          }
+                        });
+                      }
+                    });
+                  },
+                ),
+              );
+            }),
           ),
         ],
         actions: [
