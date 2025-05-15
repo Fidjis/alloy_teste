@@ -21,7 +21,7 @@ abstract class _TablesStoreBase with Store {
     final lower = searchTerm.toLowerCase();
     return tables.where((table) {
       if (table.identification.toLowerCase().contains(lower)) return true;
-      for (final customer in table.customers) {
+      for (final customer in table.customers.toList()) {
         if (customer.name.toLowerCase().contains(lower) || (customer.phone.toLowerCase().contains(lower))) {
           return true;
         }
