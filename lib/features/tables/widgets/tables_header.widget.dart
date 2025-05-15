@@ -5,6 +5,7 @@ import 'package:teste_flutter/shared/widgets/search_input.widget.dart';
 import 'package:teste_flutter/utils/extension_methos/material_extensions_methods.dart';
 import 'package:teste_flutter/features/tables/widgets/edit_table_modal.widget.dart';
 import 'package:get_it/get_it.dart';
+import 'package:flutter_mobx/flutter_mobx.dart';
 
 class TablesHeader extends StatelessWidget {
   const TablesHeader({super.key});
@@ -38,7 +39,12 @@ class TablesHeader extends StatelessWidget {
               },
             ),
             const SizedBox(width: 20),
-            CustomersCounter(label: tablesStore.tables.fold<int>(0, (sum, t) => sum + t.customers.length).toString()),
+            Observer(
+              builder: (_) {
+                final total = tablesStore.tables.fold<int>(0, (sum, t) => sum + t.customers.length);
+                return CustomersCounter(label: total.toString());
+              },
+            ),
             const SizedBox(width: 20),
             FloatingActionButton(
               onPressed: () => _openCreateTableModal(context),

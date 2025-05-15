@@ -9,7 +9,8 @@ import 'package:teste_flutter/shared/widgets/primary_button.widget.dart';
 import 'package:teste_flutter/shared/widgets/secondary_button.widget.dart';
 
 class EditCustomerModal extends StatefulWidget {
-  const EditCustomerModal({super.key, this.customer});
+  final void Function(CustomerEntity)? onSave;
+  const EditCustomerModal({super.key, this.customer, this.onSave});
 
   final CustomerEntity? customer;
 
@@ -41,6 +42,12 @@ class _EditCustomerModalState extends State<EditCustomerModal> {
       name: nameController.text,
       phone: phoneController.text,
     );
+
+    if (widget.onSave != null) {
+      widget.onSave!(newCustomer);
+      Navigator.of(context).pop();
+      return;
+    }
 
     if (customer == null) {
       customersStore.addCustomer(newCustomer);
@@ -85,8 +92,7 @@ class _EditCustomerModalState extends State<EditCustomerModal> {
         ],
         actionsAlignment: MainAxisAlignment.end,
         actions: [
-          SecondaryButton(
-              onPressed: () => Navigator.of(context).pop(), text: 'Cancelar'),
+          SecondaryButton(onPressed: () => Navigator.of(context).pop(), text: 'Cancelar'),
           PrimaryButton(onPressed: handleSave, text: 'Salvar'),
         ],
       ),
