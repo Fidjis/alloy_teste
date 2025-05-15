@@ -67,15 +67,6 @@ class _EditTableModalState extends State<EditTableModal> {
 
   @override
   void dispose() {
-    if (ModalRoute.of(context)?.isCurrent == false) {
-      final customersStore = GetIt.I<CustomersStore>();
-      for (final id in addedCustomerIds) {
-        final toRemove = customersStore.customers.firstWhereOrNull((c) => c.id == id);
-        if (toRemove != null) {
-          customersStore.removeCustomer(toRemove);
-        }
-      }
-    }
     super.dispose();
   }
 
@@ -166,7 +157,16 @@ class _EditTableModalState extends State<EditTableModal> {
         actions: [
           SecondaryButton(
             child: const Text('Cancelar'),
-            onPressed: () => Navigator.of(context).pop(),
+            onPressed: () {
+              final customersStore = GetIt.I<CustomersStore>();
+              for (final id in addedCustomerIds) {
+                final toRemove = customersStore.customers.firstWhereOrNull((c) => c.id == id);
+                if (toRemove != null) {
+                  customersStore.removeCustomer(toRemove);
+                }
+              }
+              Navigator.of(context).pop();
+            },
           ),
           PrimaryButton(
             onPressed: handleSave,
